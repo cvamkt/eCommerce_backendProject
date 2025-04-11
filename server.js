@@ -10,6 +10,8 @@ const db_config = require("./Config/db.config")
 const user_model = require("./models/user.model")
 const bcrypt = require("bcryptjs")
 
+app.use(express.json())
+
 
 
 /**]
@@ -62,6 +64,12 @@ async function init() {
 
     }
 }
+/**
+ * switch the route to server
+ */
+
+
+require("./routes/auth.route")(app)
 
 
 
