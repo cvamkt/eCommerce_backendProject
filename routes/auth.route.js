@@ -3,7 +3,8 @@
   */
 
  const authController = require("../controllers/auth.controller")
+ const authMiddleware = require("../middlewares/auth.middleware")
 
  module.exports = (app)=>{
-    app.post("/api/v1/auth/signup", authController.signup)
+    app.post("/api/v1/auth/signup",[authMiddleware.verifySignUpBody], authController.signup)
  }
