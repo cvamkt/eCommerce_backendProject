@@ -15,7 +15,7 @@
      * POST localhost:8888/api/v1/auth/signIn
      */
 
-    app.post("/api/v1/auth/signIn",authController.signIn)
+    app.post("/api/v1/auth/signIn",[authMiddleware.verifySignInBody],authController.signIn)
  }
 
 
