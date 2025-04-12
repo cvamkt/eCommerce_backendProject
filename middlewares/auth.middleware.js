@@ -3,6 +3,12 @@
  */
 
 const user_model = require("../models/user.model")
+const jwt = require('jsonwebtoken')
+const auth_config = require("../Config/auth.config")
+
+
+
+
 
 const verifySignUpBody = async (req, res, next) => {
 
@@ -49,16 +55,16 @@ const verifySignUpBody = async (req, res, next) => {
 // signin___________________________________________________________________
 
 
-const verifySignInBody = async(req,res,next)=>{
-    if(!req.body.userId){
+const verifySignInBody = async (req, res, next) => {
+    if (!req.body.userId) {
         return res.status(400).send({
-            message : "userId is not valid"
+            message: "userId is not valid"
         })
     }
 
-    if(!req.body.password){
+    if (!req.body.password) {
         return res.status(400).send({
-            message : "password is not provided"
+            message: "password is not provided"
         })
     }
 
@@ -66,7 +72,66 @@ const verifySignInBody = async(req,res,next)=>{
 }
 
 
+// category
+
+const verifyToken = async (req, res, next) => {
+
+    // check if the token is present in the header
+    const token = req.headers['x-access-token']
+
+    if (!token) {
+        return res.status(403).send({
+            message: "No token found : UnAuthorized"
+        })
+    }
+
+
+
+    // if it is a valid token
+    jwt.verify(token, auth_config.secret, async (err, decoded) => {
+        if (err) {
+            return res.status(401).send({
+                message: "UnAuthorized !"
+            })
+        }
+
+        const user = await user_model.findOne({ userId: decoded.id })
+        if (!user) {
+            return res.status(400).send({
+                message: "UnAuthorized, this user for this token doesn't exit"
+            })
+        }
+
+        // set the user info in the req body
+
+        req.user = user
+        next()
+    })
+
+
+
+    // then move to the next step
+}
+
+
+
+const isAdmin = (req, res, next) => {
+    const user = req.user
+
+    if (user && user.userType === "ADMIN") {
+        next()
+    } else {
+        return res.status(403).send({
+            message: "only admin can do it not u FOOL !"
+        })
+    }
+}
+
+
+
 module.exports = {
     verifySignUpBody: verifySignUpBody,
-    verifySignInBody : verifySignInBody
+    verifySignInBody: verifySignInBody,
+    verifyToken: verifyToken,
+    isAdmin: isAdmin
 }
