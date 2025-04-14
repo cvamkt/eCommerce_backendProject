@@ -1,4 +1,4 @@
-const shopModel = require("../models/shop.model")
+// const shopModel = require("../models/shop.model")
 const shop_model = require("../models/shop.model")
 
 
@@ -17,7 +17,9 @@ exports.createShop = async (req, res) => {
 
     try {
         const shop_created = await shop_model.create(shop_data)
-        res.status(201).send(shop_created)
+        // populate
+        const populateShop = await shop_model.findById(shop_created._id).populate('categories')
+        res.status(201).send(populateShop)
 
     } catch (error) {
         console.log("failed ho gya bhai", error);

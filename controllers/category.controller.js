@@ -17,7 +17,7 @@ exports.createNewCategory = async (req, res) => {
         })
     }
     try {
-        const shop = shop_model.findById(shopId) // belongn to whom⬆️
+        const shop = await shop_model.findById(shopId) // belongn to whom⬆️
         if (!shop) {
             return res.status(404).send({
                 message: "Shop not found bro !"
@@ -34,18 +34,84 @@ exports.createNewCategory = async (req, res) => {
         const cat_data = {
             name,
             description,
-            shop: shopId
+            shopId: shopId
         }
 
-        const cate_created = await cat_model(cat_data)
+        const cate_created = await cat_model.create(cat_data)
 
-        return res.status(201).send(cate_created)
+        // push
+
+        await shop_model.findByIdAndUpdate(shopId, {
+            $push: {
+                categories: {
+                    _id: cate_created._id,
+                    name: cate_created.name,
+                    description: cate_created.description
+                }
+
+            }
+        })
+
+        // populate
+        const updatedShop = await shop_model.findById(shopId).populate('categories')
+
+
+
+        return res.status(201).send(updatedShop)
 
 
     } catch (error) {
         console.log("failed boro !", error);
         return res.status(500).send({
             message: "error while creating category"
+        })
+
+    }
+}
+
+//_____________________________________________________________________
+
+exports.deleteCategory = async (req, res) => {
+    // const {categoryId, shopId} = req.body
+
+    const categoryId = req.params.id
+    const { shopId } = req.body
+
+    if (!categoryId || !shopId) {
+        return res.status(400).send({
+            message: "bith r required !"
+        })
+    }
+    try {
+        const deleteCategory = await cat_model.findByIdAndDelete(categoryId)
+        if (!deleteCategory) {
+            return res.status(404).send({
+                message: "category not found !"
+            })
+        }
+
+        console.log(`Deleting category ${categoryId} from shop ${shopId}`);
+
+
+        const updatedShop = await shop_model.findByIdAndUpdate(shopId, {
+            $pull: { categories: categoryId }
+        }, { new: true })
+
+
+        if (!updatedShop) {
+            return res.status(400).send({
+                message: "shop not found"
+            })
+        }
+
+        return res.status(200).send({
+            message: "category deleted n removed from the shop ! 😘",
+            updatedShop
+        })
+    } catch (error) {
+        console.log("kuchh to lochaa hai 🤨", error);
+        return res.status(500).send({
+            message: "error while deleting bror !"
         })
 
     }

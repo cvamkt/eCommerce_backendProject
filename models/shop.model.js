@@ -16,8 +16,9 @@ const shopSchema = new mongoose.Schema({
     },
     categories: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Category"
+        ref: 'Category'
     }]
+    
 }, { timeStamps: true, versionKey: false })
 
 module.exports = mongoose.model("shop", shopSchema)
