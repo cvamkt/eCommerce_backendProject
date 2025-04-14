@@ -6,15 +6,20 @@
 const mongoose = require('mongoose')
 
 const categorySchema = new mongoose.Schema({
-    name:{
-        type : String,
-        required : true,
-        unique : true
+    name: {
+        type: String,
+        required: true,
+        unique: true
     },
-    description : {
-        type : String,
-        required : true
+    description: {
+        type: String,
+        required: true
+    },
+    shop: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Shop",
+        required: true
     }
-},{timestamps : true , versionKey : false})
+}, { timestamps: true, versionKey: false })
 
-module.exports =  mongoose.model("Category", categorySchema) // plural Categories
+module.exports = mongoose.model("Category", categorySchema) // plural Categories

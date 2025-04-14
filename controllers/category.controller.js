@@ -4,37 +4,52 @@
  */
 
 const cat_model = require("../models/category.model")
+const shop_model = require("../models/shop.model")
 
 
 exports.createNewCategory = async (req, res) => {
 
+    const { name, description, shopId } = req.body
 
-    // read the req body
-
-
-    //create into category obj
-    const cat_data = {
-        name: req.body.name,
-        description: req.body.description
-
-
+    if (!shopId) {
+        return res.status(400).send({
+            message: "shop ID is reuired"
+        })
     }
-
     try {
-        // insert into mongoDb
-        const cate_created = await cat_model.create(cat_data)
+        const shop = shop_model.findById(shopId) // belongn to whom⬆️
+        if (!shop) {
+            return res.status(404).send({
+                message: "Shop not found bro !"
+            })
+        }
+        if (shop.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).send({
+                message: "You are not authorized to add categories to this shop"
+            })
+        }
+
+        // category objjjj
+
+        const cat_data = {
+            name,
+            description,
+            shop: shopId
+        }
+
+        const cate_created = await cat_model(cat_data)
+
         return res.status(201).send(cate_created)
 
+
     } catch (error) {
-        console.log("failed !.....", error);
+        console.log("failed boro !", error);
         return res.status(500).send({
-            message: "Error while creating the category"
+            message: "error while creating category"
         })
 
     }
-
-
-    // return the response of the created category
-
-
 }
+
+// return the response of the created cate
+
