@@ -43,17 +43,17 @@ exports.createNewCategory = async (req, res) => {
 
         await shop_model.findByIdAndUpdate(shopId, {
             $push: {
-                categories: {
-                    _id: cate_created._id,
-                    name: cate_created.name,
-                    description: cate_created.description
-                }
+
+                categories: cate_created._id
+
 
             }
         })
 
         // populate
         const updatedShop = await shop_model.findById(shopId).populate('categories')
+        console.log("bn rhaa hai ki ni : ",updatedShop.categories);
+
 
 
 
@@ -95,7 +95,7 @@ exports.deleteCategory = async (req, res) => {
 
         const updatedShop = await shop_model.findByIdAndUpdate(shopId, {
             $pull: { categories: categoryId }
-        }, { new: true })
+        }, { new: true }).populate('categories')
 
 
         if (!updatedShop) {
