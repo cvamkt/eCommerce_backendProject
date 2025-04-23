@@ -79,7 +79,7 @@ exports.deleteCategory = async (req, res) => {
 
     if (!categoryId || !shopId) {
         return res.status(400).send({
-            message: "bith r required !"
+            message: "both r required !"
         })
     }
     try {

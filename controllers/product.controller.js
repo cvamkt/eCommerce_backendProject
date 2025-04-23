@@ -6,7 +6,7 @@ const product_model = require("../models/product.model")
 const category_model = require("../models/category.model")
 const shop_model = require("../models/shop.model")
 
-
+//________________________________________________________________________________________
 exports.createProduct = async (req, res) => {
     const { image, name, description, price, categoryId, link } = req.body
 
@@ -43,7 +43,7 @@ exports.createProduct = async (req, res) => {
             description,
             price,
             image: image || 'https://tse4.mm.bing.net/th/id/OIP.dlsFyeoIz85ZYdETpmDGpQAAAA?rs=1&pid=ImgDetMain',
-            category: categoryId
+            categoryId: categoryId
         }
 
         const createProduct = await product_model.create(product_data)
@@ -73,4 +73,54 @@ exports.createProduct = async (req, res) => {
 
     }
 
+}
+
+
+//_______________________________________________________________________________
+
+exports.deleteProduct = async (req, res) => {
+    const productId = req.params.id
+    const { categoryId } = req.body
+
+    console.log(`deleting product ${productId} from category ${categoryId}`);
+
+    if (!productId || !categoryId) {
+        return res.status(400).send({
+            message: "both r reuired !"
+        })
+        
+    }
+    // console.log("proID", productId, "catId", categoryId);
+    try {
+        const deleteProduct = await product_model.findByIdAndDelete(productId)
+        if (!deleteProduct) {
+            return res.status(400).send({
+                message: "product not found"
+            })
+        }
+
+        // console.log(`deleting product ${prodcutId} from shop ${categoryId}`);
+
+        const updatecategory = await category_model.findByIdAndUpdate(categoryId, {
+            $pull: { products: productId }
+        }, { new: true }).populate('products')
+
+        if (!updatecategory) {
+            return res.status(400).send({
+                message: "category not found !"
+            })
+        }
+
+        return res.status(200).send({
+            message: "product deleted n removed from the category bro !",
+            updatecategory
+        })
+
+    } catch (error) {
+        console.log("kuchh to locha hai product mein 🤨", error);
+        return res.status(500).send({
+            message: "error while deleting pro bro!"
+        })
+
+    }
 }
