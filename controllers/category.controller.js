@@ -52,7 +52,7 @@ exports.createNewCategory = async (req, res) => {
 
         // populate
         const updatedShop = await shop_model.findById(shopId).populate('categories')
-        console.log("bn rhaa hai ki ni : ",updatedShop.categories);
+        console.log("bn rhaa hai ki ni : ", updatedShop.categories);
 
 
 
@@ -64,6 +64,98 @@ exports.createNewCategory = async (req, res) => {
         console.log("failed boro !", error);
         return res.status(500).send({
             message: "error while creating category"
+        })
+
+    }
+}
+
+
+//________________________________________________________
+exports.getMyCategory = async (req, res) => {
+    try {
+        const myShop = await shop_model.find({ owner: req.user._id })
+
+        if (myShop.length === 0) {
+            return res.status(404).send({
+                message: "no shop found !"
+            })
+        }
+
+        const shopIds = myShop.map(shop => shop._id)
+
+        const categories = await cat_model.find({ shopId: { $in: shopIds } })
+
+        return res.status(200).send({
+            message: "categories fetched successfully",
+            categories
+        })
+    } catch (error) {
+        console.log("error fetching categories", error);
+        return res.status(500).send({
+            message: "internal server error while fetching categories"
+        })
+
+    }
+}
+
+//___________________________________________________________________
+
+exports.getSingleMyCategory = async (req, res) => {
+    try {
+        const category = await cat_model.findById(req.params.id)
+
+        if (!category) {
+            return res.status(404).send({
+                message: "phle bana tu 🤨"
+            })
+        }
+        return res.status(200).send(category)
+
+    } catch (error) {
+        console.log("kuchh ni dala hai tu", error);
+        return res.status(500).send({
+            message: "error while fetching buddy !"
+        })
+
+    }
+}
+
+//_____________________________________________________________________
+
+exports.updateCategory = async (req, res) => {
+    try {
+        const { name, description } = req.body
+
+        const category = await cat_model.findById(req.params.id)
+
+        if (!category) {
+            return res.status(400).send({
+                message: "category not found ok !"
+            })
+        }
+
+        const shop = await shop_model.findById(category.shopId);
+        if (!shop || shop.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).send({
+                message: "you are not authorized to update this category"
+            });
+        }
+
+
+        category.name = name || category.name;
+        category.description = description || category.description;
+
+        await category.save();
+
+        return res.status(200).send({
+            message: "category updated successfully !💕",
+            category
+        })
+
+    } catch (error) {
+        console.log("kaha hai category ", error);
+        return res.status(500).send({
+            message: "internal server error"
         })
 
     }

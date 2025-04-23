@@ -75,6 +75,10 @@ require("./routes/shop.route")(app)
 require("./routes/product.route")(app)
 
 
+app.use('/uploads', express.static('uploads'))
+
+
+
 
 /**
  * start the server

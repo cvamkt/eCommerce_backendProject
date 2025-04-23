@@ -121,7 +121,7 @@ exports.updateShop = async (req, res) => {
 
     } catch (error) {
         console.log("failed to update bro ! 😭", error);
-        res.status(500).send({
+      return  res.status(500).send({
             message: "Error while updating shop"
         })
 
