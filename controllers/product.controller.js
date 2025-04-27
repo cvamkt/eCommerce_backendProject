@@ -5,7 +5,7 @@
 const product_model = require("../models/product.model")
 const category_model = require("../models/category.model")
 const shop_model = require("../models/shop.model")
-const product = require("../models/product.model")
+// const product = require("../models/product.model")
 
 //________________________________________________________________________________________
 exports.createProduct = async (req, res) => {
@@ -85,17 +85,19 @@ exports.createProduct = async (req, res) => {
 //___________________________________________________________________________________
 
 exports.getAllProducts = async (req, res) => {
-    const { categoryId } = req.query;
-    if (!categoryId) {
+    const category = req.params.id;
+    console.log("id de", category);
+
+    if (!category) {
         return res.status(400).send({
             message: "Category ID is required"
         })
     }
     try {
 
-        const products = await product_model.find({ categoryId })
+        const products = await product_model.find({ categoryId: category })
 
-        if (product.length === 0) {
+        if (products.length === 0) {
             return res.status(404).send({
                 message: "No Product found in this category"
             })

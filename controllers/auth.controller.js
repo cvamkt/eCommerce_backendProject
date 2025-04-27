@@ -30,12 +30,12 @@ exports.signup = async (req, res) => {
         /**
          * return this user
          */
-        res.status(201).send(user_created) // success
+      return  res.status(201).send(user_created) // success
 
 
     } catch (err) {
         console.log("eror while registring", err);
-        res.status(500).send({
+       return res.status(500).send({
             message: "some error happend while registering"
         })
     }

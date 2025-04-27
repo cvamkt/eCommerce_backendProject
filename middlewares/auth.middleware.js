@@ -41,12 +41,13 @@ const verifySignUpBody = async (req, res, next) => {
                 message: "Failed ! same userId is already exits"
             })
         }
+        next()
 
 
     } catch (error) {
 
         console.log("error while validating the request object", error)
-        res.status(500).send({
+      return  res.status(500).send({
             message: "Error while validating the request body"
         })
 
@@ -127,11 +128,24 @@ const isAdmin = (req, res, next) => {
     }
 }
 
+const user = (req,res,next)=>{
+    const user = req.user
+
+    if(user && user.userType === "CUSTOMER"){
+        next()
+    }else{
+        return res.status(403).send({
+            message: "only CUSTOMER can rate any product!"
+        })
+    }
+}
+
 
 
 module.exports = {
     verifySignUpBody: verifySignUpBody,
     verifySignInBody: verifySignInBody,
     verifyToken: verifyToken,
-    isAdmin: isAdmin
+    isAdmin: isAdmin,
+    user:user
 }

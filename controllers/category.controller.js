@@ -73,17 +73,24 @@ exports.createNewCategory = async (req, res) => {
 //________________________________________________________
 exports.getMyCategory = async (req, res) => {
     try {
-        const myShop = await shop_model.find({ owner: req.user._id })
+        const myShop = req.params.id
+        console.log("id de bhai", myShop);
 
-        if (myShop.length === 0) {
-            return res.status(404).send({
-                message: "no shop found !"
+
+        if (!myShop) {
+            return res.status(400).send({
+                message: "Shop is required"
             })
         }
 
-        const shopIds = myShop.map(shop => shop._id)
 
-        const categories = await cat_model.find({ shopId: { $in: shopIds } })
+        const categories = await cat_model.find({ shopId:myShop })
+
+          if (categories.length === 0) {
+                    return res.status(404).send({
+                        message: "No category found in this category"
+                    })
+                }
 
         return res.status(200).send({
             message: "categories fetched successfully",
