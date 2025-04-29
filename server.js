@@ -1,7 +1,7 @@
 /**
  * this is the starting file of the project
  */
-
+require("dotenv").config()
 const express = require('express')
 const mongoose = require('mongoose')
 const app = express()

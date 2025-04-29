@@ -37,10 +37,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         default: "CUSTOMER",
-        enum: ["CUSTOMER", "ADMIN","SYSTEM ADMIN"]
-    }
+        enum: ["CUSTOMER", "ADMIN", "SYSTEM ADMIN"]
+    },
+    resetPasswordOtp: String,
+    resetPasswordOtpExpiration: Date
 
-},{timestamps : true, versionKey : false})
+
+}, { timestamps: true, versionKey: false })
 
 
 module.exports = mongoose.model("User", userSchema)
