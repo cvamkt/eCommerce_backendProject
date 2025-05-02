@@ -74,6 +74,7 @@ require("./routes/category.route")(app)
 require("./routes/shop.route")(app)
 require("./routes/product.route")(app)
 require("./routes/rating.route")(app)
+require("./routes/payment.route")(app)
 
 
 app.use('/uploads', express.static('uploads'))

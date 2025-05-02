@@ -3,7 +3,8 @@
   * POST localhost:8888/api/v1/auth/signIn
   * PUT localhost:8888/api/v1/auth/resetPassword
   * POS localhost:8888/api/v1/auth/forgetPassword
-  * POS localhost:8888/api/v1/auth/forResPassword
+  * POST localhost:8888/api/v1/auth/forResPassword
+  * POST localhost:8888/api/v1/auth/changeRole
   */
 
  const authController = require("../controllers/auth.controller")
@@ -15,6 +16,7 @@
     app.put("/api/v1/auth/resetPassword",authMiddleware.verifyToken,authController.resetPassword)
     app.post("/api/v1/auth/forgetPassword",authMiddleware.verifyToken,authController.forgetPassword)
     app.post("/api/v1/auth/forResPassword",authMiddleware.verifyToken,authController.verifyOtpAndResetPassword)
+    app.post("/api/v1/auth/changeRole",[authMiddleware.verifyToken,authMiddleware.SystemAdmin],authController.updateUserRole)
  }
 
 

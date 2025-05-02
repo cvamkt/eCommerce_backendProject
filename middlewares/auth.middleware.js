@@ -47,7 +47,7 @@ const verifySignUpBody = async (req, res, next) => {
     } catch (error) {
 
         console.log("error while validating the request object", error)
-      return  res.status(500).send({
+        return res.status(500).send({
             message: "Error while validating the request body"
         })
 
@@ -128,14 +128,26 @@ const isAdmin = (req, res, next) => {
     }
 }
 
-const user = (req,res,next)=>{
+const user = (req, res, next) => {
     const user = req.user
 
-    if(user && user.userType === "CUSTOMER"){
+    if (user && user.userType === "CUSTOMER") {
         next()
-    }else{
+    } else {
         return res.status(403).send({
-            message: "only CUSTOMER can rate any product!"
+            message: "only CUSTOMER are allowed!"
+        })
+    }
+}
+
+const SystemAdmin = (req, res, next) => {
+    const user = req.user
+
+    if (user && user.userType == "SYSTEM ADMIN") {
+        next()
+    } else {
+        return res.status(403).send({
+            message: "only SYSTEM ADMIN can do it! "
         })
     }
 }
@@ -147,5 +159,6 @@ module.exports = {
     verifySignInBody: verifySignInBody,
     verifyToken: verifyToken,
     isAdmin: isAdmin,
-    user:user
+    user: user,
+    SystemAdmin : SystemAdmin
 }
